@@ -58,6 +58,15 @@ def is_allowed(target_url: str) -> bool:
 
 
 def resolve_and_check(url: str) -> tuple[str, bool]:
+    """
+    Follow redirects for a link, then
+    validate that final link can be crawled per its robots.txt file
+
+    :param url: Initial url to investigate
+    :type url: str
+    :return: link, can be crawled = True
+    :rtype: tuple[str, bool]
+    """
 
     response = requests.get(url=url, allow_redirects=True, stream=True, headers=HEADERS)
     final_url = response.url
