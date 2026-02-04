@@ -4,7 +4,9 @@ considering redirects and the name of our agent
 """
 
 import json
+import random
 import requests
+from time import sleep
 import urllib.robotparser as robotparser
 from urllib.parse import urlparse
 
@@ -23,6 +25,20 @@ with open("config.json", "r") as f:
     HEADERS["User-Agent"] = json.load(f)["User-Agent"]
 
 
+def pause(base_delay: float = 3, jitter: float = 1) -> None:
+    """
+    Pause a random amount of time, centered around base_delay
+
+    :param base_delay: Description
+    :type base_delay: float
+    :param jitter: Description
+    :type jitter: float
+    """
+    delay = base_delay + random.uniform(-jitter, jitter)
+    delay = max(0.5, delay)
+    sleep(delay)
+
+
 def get_robot_parser(base_url: str) -> robotparser.RobotFileParser:
     """
     Connect to the site and return the robots.txt file
@@ -36,6 +52,7 @@ def get_robot_parser(base_url: str) -> robotparser.RobotFileParser:
         rp = robotparser.RobotFileParser()
         rp.set_url(f"{base_url}/robots.txt")
         rp.read()
+        pause()
         robots_cache[base_url] = rp
 
     return robots_cache[base_url]
@@ -69,6 +86,7 @@ def resolve_and_check(url: str) -> tuple[str, bool]:
     """
 
     response = requests.get(url=url, allow_redirects=True, stream=True, headers=HEADERS)
+    pause()
     final_url = response.url
 
     allowed = is_allowed(final_url)
