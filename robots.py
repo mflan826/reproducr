@@ -22,7 +22,7 @@ with personal contact info
 """
 HEADERS = {}
 with open("config.json", "r") as f:
-    HEADERS["User-Agent"] = json.load(f)["User-Agent"]
+    HEADERS["User-Agent"] = "Mozilla/5.0 (compatible; {tool_name}/{version}; +mailto:{email})".format(**json.load(f))
 
 
 def pause(base_delay: float = 3, jitter: float = 1) -> None:
