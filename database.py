@@ -60,3 +60,11 @@ def write_keyword(doi: str, keyword: str) -> None:
     with open(keyword_file_path, "a") as f:
         csv_writer = csv.writer(f, **csv_params)
         csv_writer.writerow([doi, keyword])
+
+def write_data(data: list[dict]) -> None:
+    """
+    Insert data to the database
+    """
+    # TODO write data to the database
+    print(len(data))
+    pass
