@@ -9,22 +9,36 @@ import bibtexparser
 from lxml import etree
 
 
-
 def parse_search_page(results: dict) -> list[dict]:
     """
     Loop through api results
-    Extract data from the output into a dict
+    Extract data from the esummary into a dict
     Add extracted data to a list
     return that list of dict
     """
     output = []
     result_pmids = results.get("uids", [])
-    # TODO introduce parallelism here
+    # TODO introduce parallelism here using function `parse_pubmed_esummary`
+    # probably want to use threads to avoid copying a potentially large dictionary?
     for pmid in result_pmids:
         result = {}
         result["pmid"] = pmid
         result["sortdate"] = results[pmid].get("sortdate", "")
         output.append(result)
+    return output
+
+
+def parse_pubmed_esummary(results: dict, pmid: str) -> dict:
+    """
+    Parse the results for one specific pmid
+    From the pubmed esummary return
+    Return the dictionary of needed data
+    """
+    output = {}
+    output["pmid"] = pmid
+    output["sortdate"] = results[pmid].get("sortdate", "")
+    # TODO extract the relevant structured data
+
     return output
 
 
