@@ -88,3 +88,22 @@ def get_search_page(webenv: str, query_key: str, retstart: int, retmax: int) -> 
         data = {}
 
     return data.get("result", [])
+
+
+def get_fetch_page(webenv: str, query_key: str, retstart: int, retmax: int):
+    params = {
+        "db": "pmc",
+        "rettype": "full",
+        "retmode": "xml",
+        "webenv": webenv,
+        "query_key": query_key,
+        "retstart": retstart,
+        "retmax": retmax,
+        "tool": TOOL_NAME,
+        "email": EMAIL,
+    }
+    if API_KEY:
+        params["api_key"] = API_KEY
+    response = requests.get(f"{BASE_URL}/efetch.fcgi", params=params, timeout=30)
+    response.raise_for_status()
+    return response.text

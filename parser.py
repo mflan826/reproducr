@@ -42,6 +42,46 @@ def parse_pubmed_esummary(results: dict, pmid: str) -> dict:
     return output
 
 
+def parse_efetch(article) -> tuple[str, str]:
+    """
+    Extract semi-structured and structured data
+    from a single article's lxml object
+    Return (pmid, doi, [data availability])
+    """
+    # Require the pmid for this article
+    try:
+        pmid = article.findtext(".//article-id[@pub-id-type='pmid']")
+    except:
+        # if doi is missing, then continue to the next record
+        return None
+
+    # get the doi
+    doi = article.findtext(".//article-id[@pub-id-type='doi']")
+
+    # Finds the 'p' tag that follows a 'title' containing 'Data Availability'
+    data_availability = article.xpath(
+        ".//title[re:test(normalize-space(.), '^data\\s*availability:?$', 'i')]/following-sibling::p",
+        namespaces={"re": "http://exslt.org/regular-expressions"},
+    )
+
+    return (pmid, doi, ["".join(da.itertext()) for da in data_availability])
+
+
+def parse_efetch_page(results: str) -> list[dict]:
+    output = []
+
+    tree = etree.fromstring(results)
+
+
+    for article in tree.xpath("//*[local-name()='article']"):
+
+        record = parse_efetch(article)
+        if record:
+            output.append(record)
+
+    return output
+
+
 def parse_jmir_xml_file(xml_file_path: str | Path) -> tuple[str, list[str]]:
     """
     Extract data from xml file
