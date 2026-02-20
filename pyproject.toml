@@ -5,7 +5,6 @@ description = "Coursework investigating reproducible research, with an emphasis 
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "bibtexparser<2",
     "bs4>=0.0.2",
     "lxml>=6.0.2",
     "requests>=2.32.5",
