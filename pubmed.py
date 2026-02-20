@@ -54,7 +54,11 @@ def get_search_context(query: str, database="pmc") -> tuple[str, str, str]:
     response.raise_for_status()
     data: dict = response.json().get("esearchresult", {})
 
-    return data.get("webenv", None), data.get("querykey", None), int(data.get("count", 0))
+    return (
+        data.get("webenv", None),
+        data.get("querykey", None),
+        int(data.get("count", 0)),
+    )
 
 
 def get_search_page(webenv: str, query_key: str, retstart: int, retmax: int) -> list:

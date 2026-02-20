@@ -28,7 +28,7 @@ def load_structured_data(
         webenv=webenv, query_key=query_key, retstart=start, retmax=retmax
     )
     n_results = len(results)
-    
+
     while n_results > 0 and start < limit:
 
         data = parse_search_page(results=results)
@@ -46,7 +46,7 @@ def load_structured_data(
         n_results = len(results)
 
 
-def load_xml_data(webenv, query_key, chunksize: int, count:int, limit=10000) -> None:
+def load_xml_data(webenv, query_key, chunksize: int, count: int, limit=10000) -> None:
     """
     Iterate through the results of a query and
     Load all of those results to the database
