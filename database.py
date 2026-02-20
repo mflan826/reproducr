@@ -66,5 +66,6 @@ def write_data(data: list[dict]) -> None:
     Insert data to the database
     """
     # TODO write data to the database
-    print(len(data))
+    print(data)
+    # print(len(data))
     pass
