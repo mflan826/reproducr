@@ -1,4 +1,4 @@
-from database import write_data
+from database import write_data_summary, write_data_detailed, create_connection, close_connection
 from parser import (
     parse_search_page,
     parse_efetch_page,
@@ -11,9 +11,7 @@ from pubmed import (
 )
 
 
-def load_structured_data(
-    webenv, query_key, chunksize: int, count: int, limit=10000
-) -> None:
+def load_structured_data(webenv, query_key, chunksize: int, count: int, limit=10000) -> None:
     """
     Iterate through the results of a query and
     Load all of those results to the database
@@ -29,11 +27,13 @@ def load_structured_data(
     )
     n_results = len(results)
 
+    db_connection = create_connection() # SQL Alchemy handler
+
     while n_results > 0 and start < limit:
 
         data = parse_search_page(results=results)
-        # print(data)
-        write_data(data)  # TODO tailor this to write structured data
+
+        write_data_summary(data, db_connection)
 
         start += chunksize
 
@@ -44,6 +44,8 @@ def load_structured_data(
             webenv=webenv, query_key=query_key, retstart=start, retmax=retmax
         )
         n_results = len(results)
+
+    close_connection(db_connection)
 
 
 def load_xml_data(webenv, query_key, chunksize: int, count: int, limit=10000) -> None:
@@ -57,6 +59,8 @@ def load_xml_data(webenv, query_key, chunksize: int, count: int, limit=10000) ->
     # set the max retrieval to not go over the max results of the api
     retmax = min(chunksize, limit - start)
 
+    db_connection = create_connection() # SQL Alchemy handler
+
     results = get_fetch_page(
         webenv=webenv, query_key=query_key, retstart=start, retmax=retmax
     )
@@ -64,8 +68,7 @@ def load_xml_data(webenv, query_key, chunksize: int, count: int, limit=10000) ->
     while results and start < limit:
 
         data = parse_efetch_page(results=results)
-        # print(data)
-        write_data(data)  # TODO tailor this to write xml results
+        write_data_detailed(data, db_connection)
 
         start += chunksize
 
@@ -75,6 +78,8 @@ def load_xml_data(webenv, query_key, chunksize: int, count: int, limit=10000) ->
         results = get_fetch_page(
             webenv=webenv, query_key=query_key, retstart=start, retmax=retmax
         )
+
+    close_connection(db_connection)
 
 
 def main():
