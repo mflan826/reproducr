@@ -41,7 +41,7 @@ def load_xml_data(webenv, query_key, chunksize: int, count: int, limit=10000) ->
 
 
 def main():
-    queries = ["informatics AND open access[filter]"]
+    queries = ["retrospective AND informatics AND (secondary OR ehr) AND 2025[pdat] AND open access[filter]"]
 
     for query in queries:
         webenv, query_key, count = get_search_context(query=query)
