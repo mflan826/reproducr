@@ -1,6 +1,6 @@
 from sqlalchemy.engine import URL
 from sqlalchemy import create_engine
-from sqlalchemy import Column, Text, Boolean
+from sqlalchemy import Column, Text, Boolean, Integer
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.pool import NullPool
 from sqlalchemy.dialects.postgresql import JSON
@@ -29,8 +29,21 @@ class ArticleDetailed(Base):
     doi = Column(Text())
     article_type = Column(Text())
     article_title = Column(Text())
+    article_subject = Column(Text())
+    authors = Column(mutable_json_type(dbtype=JSON, nested=True))
     pub_date = Column(Text())
     keywords = Column(mutable_json_type(dbtype=JSON, nested=True))
+    reference_count = Column(Integer())
+    license_type = Column(Text())
+    journal_title = Column(Text())
+    publisher_name = Column(Text())
+    copyright_statement = Column(Text())
+    copyright_year = Column(Text())
+    abstract = Column(Text())
+    affiliations = Column(mutable_json_type(dbtype=JSON, nested=True))
+    has_supplemental = Column(Boolean())
+    figure_count = Column(Text())
+    table_count = Column(Text())
     funding = Column(mutable_json_type(dbtype=JSON, nested=True))
     data_available_details = Column(mutable_json_type(dbtype=JSON, nested=True))
     data_available = Column(Boolean())

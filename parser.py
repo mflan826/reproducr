@@ -11,6 +11,7 @@ def parse_efetch(article) -> dict | None:
     from a single article's lxml object
     Returns a dict or None if pmid is missing
     """
+
     pmid = article.findtext(".//article-id[@pub-id-type='pmid']")
     if not pmid:
         return None
@@ -54,13 +55,62 @@ def parse_efetch(article) -> dict | None:
         namespaces=ns,
     )
 
+    article_subject = article.findtext(".//subj-group[@subj-group-type='heading']/subject", "")
+
+    authors = []
+    for contrib in article.findall(".//contrib[@contrib-type='author']"):
+        authors.append({
+            "surname": contrib.findtext("name/surname", ""),
+            "given_names": contrib.findtext("name/given-names", ""),
+            "orcid":
+                contrib.findtext("contrib-id[@contrib-id-type='orcid']", "").strip(),
+            "is_corresponding": contrib.find("xref[@ref-type='corresp']") is not None,
+        })
+
+    reference_count = len(article.findall(".//ref-list/ref"))
+
+    license_el = article.find('.//license')
+    license_type = license_el.get("license-type") if license_el is not None else ""
+
+    journal_title = article.findtext(".//journal-title","")
+
+    publisher_name = article.findtext(".//publisher-name","")
+
+    copyright_year = article.findtext('.//copyright-year', "")
+
+    copyright_statement = article.findtext('.//copyright-statement', "")
+
+    affiliations = ["".join(aff.itertext()) for aff in article.findall(".//aff")]
+
+    has_supplemental = article.findtext(".//custom-meta[meta-name='pmc-prop-has-supplement']/meta-value", "") == "yes"
+
+    figure_count = len(article.findall(".//fig"))
+
+    table_count = len(article.findall(".//table-wrap"))
+
+    abstract_el = article.find(".//abstract")
+    abstract = "".join(abstract_el.itertext()).strip() if abstract_el is not None else ""
+
     return {
         "pmid": pmid,
         "doi": doi,
         "article_type": article_type,
         "article_title": article_title,
+        "article_subject": article_subject,
+        "authors": authors,
         "pub_date": pub_date,
         "keywords": keywords,
+        "reference_count": reference_count,
+        "license_type": license_type,
+        "journal_title": journal_title,
+        "publisher_name": publisher_name,
+        "copyright_statement": copyright_statement,
+        "copyright_year": copyright_year,
+        "abstract": abstract,
+        "affiliations": affiliations,
+        "has_supplemental": has_supplemental,
+        "figure_count": figure_count,
+        "table_count": table_count,
         "funding": funding,
         "data_availability": ["".join(da.itertext()) for da in data_availability],
         "code_availability": ["".join(ca.itertext()) for ca in code_availability],
