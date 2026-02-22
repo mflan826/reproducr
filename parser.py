@@ -17,10 +17,65 @@ def parse_efetch(article) -> dict | None:
 
     doi = article.findtext(".//article-id[@pub-id-type='doi']")
 
-    article_type = article.get("article-type", "")
+def parse_pubmed_esummary(results: dict, pmid: str) -> dict:
+    """
+    Parse the results for one specific pmid
+    From the pubmed esummary return
+    Return the dictionary of needed data
+    """
 
-    title_el = article.find(".//article-title")
-    article_title = "".join(title_el.itertext()) if title_el is not None else ""
+    article = results.get("result", {}).get(pmid)
+    if not article:
+        return {}
+
+    # Authors
+    authors = article.get("authors", [])
+    author_names = [a.get("name", "") for a in authors if "name" in a]
+
+    # Article IDs
+    doi = ""
+    pmcid = ""
+    pubmed_id = ""
+
+    for aid in article.get("articleids", []):
+        if aid.get("idtype") == "doi":
+            doi = aid.get("value", "")
+        if aid.get("idtype") == "pmcid":
+            pmcid = aid.get("value", "")
+        if aid.get("idtype") == "pmid":
+            pubmed_id = aid.get("value", "")
+
+    # Dates
+    pubdate = article.get("pubdate", "")
+    epubdate = article.get("epubdate", "")
+    printpubdate = article.get("printpubdate", "")
+    sortdate = article.get("sortdate", "")
+    pmc_live_date = article.get("pmclivedate", "")
+
+    resolved_date = epubdate or pubdate or printpubdate or sortdate
+
+    return {
+        "uid": pmid,                 # the key used in esummary
+        "pubmed_id": pubmed_id,      # the true PMID from articleids
+        "title": article.get("title", ""),
+        "journal": article.get("fulljournalname", ""),
+        "journal_abbrev": article.get("source", ""),
+        "pubdate": pubdate,
+        "epubdate": epubdate,
+        "printpubdate": printpubdate,
+        "sortdate": sortdate,
+        "pmc_live_date": pmc_live_date,
+        "resolved_pubdate": resolved_date,
+        "volume": article.get("volume", ""),
+        "issue": article.get("issue", ""),
+        "pages": article.get("pages", ""),
+        "doi": doi,
+        "pmcid": pmcid,
+        "authors": "; ".join(author_names),
+        "author_count": len(author_names),
+        "publication_types": "; ".join(article.get("pubtype", [])),
+        "language": "; ".join(article.get("lang", [])),
+    }
 
     # Prefer epub date, fall back to ppub, then first available
     pub_date_el = (
