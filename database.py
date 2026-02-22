@@ -1,6 +1,6 @@
 from sqlalchemy.engine import URL
 from sqlalchemy import create_engine
-from sqlalchemy import Column, Date, Text, Boolean
+from sqlalchemy import Column, Text, Boolean
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.pool import NullPool
 from sqlalchemy.dialects.postgresql import JSON

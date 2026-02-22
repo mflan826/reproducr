@@ -13,7 +13,6 @@ def load_xml_data(webenv, query_key, chunksize: int, count: int, limit=10000) ->
     Load all of those results to the database
     """
     start = 0
-    n_results = chunksize
 
     # set the max retrieval to not go over the max results of the api
     retmax = min(chunksize, limit - start)

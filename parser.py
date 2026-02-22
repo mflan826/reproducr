@@ -2,7 +2,6 @@
 Parse raw data output
 """
 
-from pathlib import Path
 from lxml import etree
 
 
