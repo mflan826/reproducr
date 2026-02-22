@@ -33,8 +33,15 @@ class ArticleDetailed(Base):
     __table_args__ = {'schema': 'daan_822'}
     pmid = Column(Text(), primary_key=True,unique=True,nullable=False)
     doi = Column(Text())
+    article_type = Column(Text())
+    article_title = Column(Text())
+    pub_date = Column(Text())
+    keywords = Column(mutable_json_type(dbtype=JSON, nested=True))
+    funding = Column(mutable_json_type(dbtype=JSON, nested=True))
     data_available_details = Column(mutable_json_type(dbtype=JSON, nested=True))
     data_available = Column(Boolean())
+    code_available_details = Column(mutable_json_type(dbtype=JSON, nested=True))
+    code_available = Column(Boolean())
 
 Base.metadata.create_all(engine)
 
@@ -61,16 +68,19 @@ def write_data_summary(data,db_connection):
 def write_data_detailed(data,db_connection):
         for rec in data:
             if rec["pmid"] is not None:
-                da_exists = False
-                if len(rec[2]) > 0:
-                    da_exists = True
-
                 db_connection.add(
                     ArticleDetailed(
-                        pmid=rec[0],
-                        doi=rec[1],
-                        data_available_details=rec[2],
-                        data_available=da_exists # bool col just to make queries easier once it's in the db
+                        pmid=rec["pmid"],
+                        doi=rec["doi"],
+                        article_type=rec["article_type"],
+                        article_title=rec["article_title"],
+                        pub_date=rec["pub_date"],
+                        keywords=rec["keywords"],
+                        funding=rec["funding"],
+                        data_available_details=rec["data_availability"],
+                        data_available=len(rec["data_availability"]) > 0,
+                        code_available_details=rec["code_availability"],
+                        code_available=len(rec["code_availability"]) > 0,
                     )
                 )
                 db_connection.commit()

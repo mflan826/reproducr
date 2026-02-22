@@ -86,29 +86,66 @@ def parse_pubmed_esummary(results: dict, pmid: str) -> dict:
     }
 
 
-def parse_efetch(article) -> tuple[str, str]:
+def parse_efetch(article) -> dict | None:
     """
     Extract semi-structured and structured data
     from a single article's lxml object
-    Return (pmid, doi, [data availability])
+    Returns a dict or None if pmid is missing
     """
-    # Require the pmid for this article
-    try:
-        pmid = article.findtext(".//article-id[@pub-id-type='pmid']")
-    except:
-        # if doi is missing, then continue to the next record
+    pmid = article.findtext(".//article-id[@pub-id-type='pmid']")
+    if not pmid:
         return None
 
-    # get the doi
     doi = article.findtext(".//article-id[@pub-id-type='doi']")
 
-    # Finds the 'p' tag that follows a 'title' containing 'Data Availability'
+    article_type = article.get("article-type", "")
+
+    title_el = article.find(".//article-title")
+    article_title = "".join(title_el.itertext()) if title_el is not None else ""
+
+    # Prefer epub date, fall back to ppub, then first available
+    pub_date_el = (
+        article.find(".//pub-date[@pub-type='epub']")
+        or article.find(".//pub-date[@date-type='pub']")
+        or article.find(".//pub-date")
+    )
+    pub_date = ""
+    if pub_date_el is not None:
+        parts = [
+            pub_date_el.findtext("year", ""),
+            pub_date_el.findtext("month", ""),
+            pub_date_el.findtext("day", ""),
+        ]
+        pub_date = "-".join(p for p in parts if p)
+
+    keywords = ["".join(kwd.itertext()) for kwd in article.findall(".//kwd")]
+
+    funding_els = article.findall(".//funding-statement") or article.findall(".//funding-source")
+    funding = ["".join(f.itertext()) for f in funding_els]
+
+    ns = {"re": "http://exslt.org/regular-expressions"}
+
     data_availability = article.xpath(
         ".//title[re:test(normalize-space(.), '^data\\s*availability:?$', 'i')]/following-sibling::p",
-        namespaces={"re": "http://exslt.org/regular-expressions"},
+        namespaces=ns,
     )
 
-    return (pmid, doi, ["".join(da.itertext()) for da in data_availability])
+    code_availability = article.xpath(
+        ".//title[re:test(normalize-space(.), '^code\\s*availability:?$', 'i')]/following-sibling::p",
+        namespaces=ns,
+    )
+
+    return {
+        "pmid": pmid,
+        "doi": doi,
+        "article_type": article_type,
+        "article_title": article_title,
+        "pub_date": pub_date,
+        "keywords": keywords,
+        "funding": funding,
+        "data_availability": ["".join(da.itertext()) for da in data_availability],
+        "code_availability": ["".join(ca.itertext()) for ca in code_availability],
+    }
 
 
 def parse_efetch_page(results: str) -> list[dict]:
