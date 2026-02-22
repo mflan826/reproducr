@@ -17,3 +17,6 @@ scraper_data/
 
 # Environment variables / secrets
 .env
+
+# VS Code
+.vscode/
