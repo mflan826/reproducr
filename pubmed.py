@@ -61,40 +61,6 @@ def get_search_context(query: str, database="pmc") -> tuple[str, str, str]:
     )
 
 
-def get_search_page(webenv: str, query_key: str, retstart: int, retmax: int) -> list:
-    """
-    Get a page of results for a submitted query
-    """
-    params = {
-        "db": "pmc",
-        "retmode": "json",
-        "webenv": webenv,
-        "query_key": query_key,
-        "retstart": retstart,
-        "retmax": retmax,
-        "tool": TOOL_NAME,
-        "email": EMAIL,
-    }
-    if API_KEY:
-        params["api_key"] = API_KEY
-
-    response = requests.get(
-        f"{BASE_URL}/esummary.fcgi",
-        params=params,
-        timeout=30,
-    )
-    response.raise_for_status()
-
-    data = {}
-    try:
-        data = response.json()
-    except requests.exceptions.JSONDecodeError:
-        # print(response.text)
-        data = {}
-
-    return data.get("result", [])
-
-
 def get_fetch_page(webenv: str, query_key: str, retstart: int, retmax: int):
     params = {
         "db": "pmc",

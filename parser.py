@@ -6,23 +6,6 @@ from pathlib import Path
 from lxml import etree
 
 
-def parse_search_page(results: dict) -> list[dict]:
-    """
-    Loop through api results
-    Extract data from the esummary into a dict
-    Add extracted data to a list
-    return that list of dict
-    """
-    output = []
-    result_pmids = results.get("uids", [])
-    for pmid in result_pmids:
-        result = {}
-        result["pmid"] = pmid
-        result["sortdate"] = results[pmid].get("sortdate", "")
-        output.append(result)
-    return output
-
-
 def parse_efetch(article) -> dict | None:
     """
     Extract semi-structured and structured data
