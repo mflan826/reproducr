@@ -14,3 +14,6 @@ config.json
 
 # Local scraped data
 scraper_data/
+
+# Environment variables / secrets
+.env
