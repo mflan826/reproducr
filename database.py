@@ -49,28 +49,28 @@ def close_connection(con):
 
 def write_data_summary(data,db_connection):
     for rec in data:
-        db_connection.add(
-            ArticleSummary(
-                pmid=rec["pmid"],
-                sort_date=rec['sortdate']
+        if rec["pmid"] is not None:
+            db_connection.add(
+                ArticleSummary(
+                    pmid=rec["pmid"],
+                    sort_date=rec['sortdate']
+                )
             )
-        )
         db_connection.commit()
-    return None
 
 def write_data_detailed(data,db_connection):
-    for rec in data:
-        da_exists = False
-        if len(rec[2]) > 0:
-            da_exists = True
+        for rec in data:
+            if rec["pmid"] is not None:
+                da_exists = False
+                if len(rec[2]) > 0:
+                    da_exists = True
 
-        db_connection.add(
-            ArticleDetailed(
-                pmid=rec[0],
-                doi=rec[1],
-                data_available_details=rec[2],
-                data_available=da_exists # bool col just to make queries easier once it's in the db
-            )
-        )
-        db_connection.commit()
-    return None
+                db_connection.add(
+                    ArticleDetailed(
+                        pmid=rec[0],
+                        doi=rec[1],
+                        data_available_details=rec[2],
+                        data_available=da_exists # bool col just to make queries easier once it's in the db
+                    )
+                )
+                db_connection.commit()
