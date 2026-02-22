@@ -70,13 +70,27 @@ def write_data_detailed(data,db_connection):
                         doi=rec["doi"],
                         article_type=rec["article_type"],
                         article_title=rec["article_title"],
+                        article_subject=rec["article_subject"],
+                        authors=rec["authors"],
                         pub_date=rec["pub_date"],
                         keywords=rec["keywords"],
+                        reference_count=rec["reference_count"],
+                        license_type=rec["license_type"],
+                        journal_title=rec["journal_title"],
+                        publisher_name=rec["publisher_name"],
+                        copyright_statement=rec["copyright_statement"],
+                        copyright_year=rec["copyright_year"],
+                        abstract=rec["abstract"],
+                        affiliations=rec["affiliations"],
+                        has_supplemental=rec["has_supplemental"],
+                        figure_count=rec["figure_count"],
+                        table_count=rec["table_count"],
                         funding=rec["funding"],
                         data_available_details=rec["data_availability"],
                         data_available=len(rec["data_availability"]) > 0,
                         code_available_details=rec["code_availability"],
                         code_available=len(rec["code_availability"]) > 0,
+
                     )
                 )
                 db_connection.commit()
