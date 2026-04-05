@@ -1,3 +1,14 @@
+# Data Collection
+
+## Bias in sample collected
+
+5.1.1 Potential for Bias
+
+The sample of articles we can collect will be inherently biased, because full participation in PubMed Central (PMC) full text article repository is voluntary. https://pmc.ncbi.nlm.nih.gov/pub/agreements/ Publishers are, however, required to share the text of articles with NIH funding. Our sample will potentially overrepresent NIH funded research compared to all articles published in the same time period. It's worth noting that NIH funded research is required to make their data publicly available, which could mean that we overrepresent data availability, specificaly.
+Publishers that do not participate in PMC will be underrepresented. Any publisher with an incentive to not release the full text of their published articles for free is likely to be underrespresented in our sample. If there is a correlation between non-participating publishers and including or not including a data availability statement, we would underrepresent that correlation in our dataset, compared to all articles published in the given time period.
+
+Taken together, we must be careful to specify that we draw our conclusions about the kinds of publishers, authors, and specialties that make their work available on PMC, within the chosen time period. We do not speak for all research published in the given time period, or research outside of our time period. But we expect to draw conclusions about the usefulness of the data which is available.
+
 # Data Cleaning
 
 ## String manipulation
